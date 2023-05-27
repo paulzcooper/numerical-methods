@@ -1,0 +1,5 @@
+flake8
+notebook
+numpy
+scipy
+matplotlib
