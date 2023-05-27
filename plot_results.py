@@ -22,5 +22,5 @@ ax.set_zlabel("Z Axis")
 ax.set_title("Vallis Attractor")
 ax.legend()
 
-plt.savefig(f'{EXPORT_DIR_PATH}fig2.png')
+plt.savefig(f'{EXPORT_DIR_PATH}fig1.png')
 plt.show()
