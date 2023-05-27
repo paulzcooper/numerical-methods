@@ -138,9 +138,6 @@ def run(t_start, t_end, xyz0, h0: float = 0.1, epsilon: int = 10e-4):
 
     xyz = np.ndarray(shape=(1, 3))
     xyz[0] = xyz0
-    xn = np.array([xyz0[0]])
-    yn = np.array([xyz0[1]])
-    zn = np.array([xyz0[2]])
     tn = np.array([t_start])
 
     # arrays for component errors
@@ -189,9 +186,6 @@ def run(t_start, t_end, xyz0, h0: float = 0.1, epsilon: int = 10e-4):
 
             xyz = np.append(xyz, [xyz_two_half_step], axis=0)
             tn = np.append(tn, tn[curr_iter] + h)
-            xn = np.append(xn, xyz_two_half_step[0])
-            yn = np.append(yn, xyz_two_half_step[1])
-            zn = np.append(zn, xyz_two_half_step[2])
             steps = np.append(steps, h)
 
             error_norms = np.append(error_norms, iter_error_norm)
@@ -206,9 +200,6 @@ def run(t_start, t_end, xyz0, h0: float = 0.1, epsilon: int = 10e-4):
 
             xyz = np.append(xyz, [xyz_two_half_step], axis=0)
             tn = np.append(tn, tn[curr_iter] + h)
-            xn = np.append(xn, xyz_two_half_step[0])
-            yn = np.append(yn, xyz_two_half_step[1])
-            zn = np.append(zn, xyz_two_half_step[2])
             steps = np.append(steps, h)
 
             error_norms = np.append(error_norms, iter_error_norm)
@@ -222,7 +213,7 @@ def run(t_start, t_end, xyz0, h0: float = 0.1, epsilon: int = 10e-4):
     print(f"Solution:\n", xyz[curr_iter])
     print(f"Error norm:\n", error_norms[-1])
 
-    return np.array([tn, xn, yn, zn]), error_norms
+    return (tn, xyz, errors)
 
 
 # initial conditions
@@ -231,8 +222,7 @@ t_end = 100
 h0 = 0.1
 xyz0 = (1, 1, 1)
 
-txyz_arr, err_norms = run(t_start=t_start, t_end=t_end, xyz0=xyz0, h0=h0)
-np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', txyz_arr[0])
-np.savetxt(f'{EXPORT_DIR_PATH}xn.csv', txyz_arr[1])
-np.savetxt(f'{EXPORT_DIR_PATH}yn.csv', txyz_arr[2])
-np.savetxt(f'{EXPORT_DIR_PATH}zn.csv', txyz_arr[3])
+tn, xyz_arr, err_norms = run(t_start=t_start, t_end=t_end, xyz0=xyz0, h0=h0)
+np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', tn)
+np.savetxt(f'{EXPORT_DIR_PATH}xyzn.csv', xyz_arr, delimiter=';')
+
