@@ -203,19 +203,20 @@ def run(t_start, t_end, hxyz, epsilon = 10e-4):
 
             curr_iter += 1
 
-    np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', tn)
-    np.savetxt(f'{EXPORT_DIR_PATH}xn.csv', xn)
-    np.savetxt(f'{EXPORT_DIR_PATH}yn.csv', yn)
-    np.savetxt(f'{EXPORT_DIR_PATH}zn.csv', zn)
-
     print(f"Current time point:\n", tn[-1])
     print(f"Solution:\n", hxyz)
     print(f"Error norm:\n", error_norms[-1])
+
+    return np.array([tn, xn, yn, zn]), error_norms
+
 
 # initial conditions
 t_start = 0
 t_end = 100
 hxyz = (0.1, 1, 1, 1)
 
-
-run(t_start=t_start, t_end=t_end, hxyz=hxyz)
+txyz_arr, err_norms = run(t_start=t_start, t_end=t_end, hxyz=hxyz)
+np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', txyz_arr[0])
+np.savetxt(f'{EXPORT_DIR_PATH}xn.csv', txyz_arr[1])
+np.savetxt(f'{EXPORT_DIR_PATH}yn.csv', txyz_arr[2])
+np.savetxt(f'{EXPORT_DIR_PATH}zn.csv', txyz_arr[3])
