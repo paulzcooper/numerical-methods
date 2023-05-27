@@ -33,38 +33,39 @@ def ksystem(k_coeffs: np.array, *hxyz: tuple) -> list:
             k_coeffs[3] k2y
             k_coeffs[4] k1z
             k_coeffs[5] k2z
-    :param hxyz:
+    :param xyz:
     :return:
     """
+    h, xyz = hxyz[0], hxyz[1:]
     coeff_system = [  # equation for k_coeffs[0] k1x
-        k_coeffs[0] - hxyz[0] * func_x(hxyz[1] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                       hxyz[2] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                       hxyz[3] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[0] - h * func_x(xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
+                                 xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
+                                 xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
         # equation for k_coeffs[2] k1y
-        k_coeffs[2] - hxyz[0] * func_y(hxyz[1] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                       hxyz[2] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                       hxyz[3] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[2] - h * func_y(xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
+                                 xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
+                                 xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
         # equation for k_coeffs[4] k1z
-        k_coeffs[4] - hxyz[0] * func_z(hxyz[1] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                       hxyz[2] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                       hxyz[3] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[4] - h * func_z(xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
+                                 xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
+                                 xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
         # equation for k_coeffs[1] k2x
-        k_coeffs[1] - hxyz[0] * func_x(hxyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                       hxyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                       hxyz[3] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[1] - h * func_x(xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
+                                 xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
+                                 xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
         # equation for k_coeffs[3] k2y
-        k_coeffs[3] - hxyz[0] * func_y(hxyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                       hxyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                       hxyz[3] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[3] - h * func_y(xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
+                                 xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
+                                 xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
         # equation for k_coeffs[5] k2z
-        k_coeffs[5] - hxyz[0] * func_z(hxyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                       hxyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                       hxyz[3] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[5] - h * func_z(xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
+                                 xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
+                                 xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
     ]
     return coeff_system
 
 
-def solve_ksystem(system_to_solve: callable, hxyz: tuple, k0: np.array = np.array((0, 0, 0, 0, 0, 0))) -> np.array:
+def solve_ksystem(system_to_solve: callable, xyz: tuple, h: float, k0: np.array = np.array((0, 0, 0, 0, 0, 0))) -> np.array:
     """
 
     :param system_to_solve: callable function that returns list of equations to solve
@@ -72,33 +73,35 @@ def solve_ksystem(system_to_solve: callable, hxyz: tuple, k0: np.array = np.arra
     :param hxyz: initial conditions for the system
     :return: list of roots (k_coeffs)
     """
+    hxyz = (h, *xyz)
     root = fsolve(system_to_solve, k0, args=hxyz)
     return root
 
 
-def make_one_step(hxyz: tuple):
+def make_one_step(xyz, h):
     """"
     Makes one step with the step size = h
     """
-    k_coeffs = solve_ksystem(system_to_solve=ksystem, hxyz=hxyz)
-    xyz_one_step = np.array([hxyz[1] + (k_coeffs[0] + k_coeffs[2]) / 2,
-                             hxyz[2] + (k_coeffs[2] + k_coeffs[3]) / 2,
-                             hxyz[3] + (k_coeffs[4] + k_coeffs[5]) / 2
+    k_coeffs = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h)
+    xyz_one_step = np.array([xyz[0] + (k_coeffs[0] + k_coeffs[2]) / 2,
+                             xyz[1] + (k_coeffs[2] + k_coeffs[3]) / 2,
+                             xyz[2] + (k_coeffs[4] + k_coeffs[5]) / 2
                              ])
     return xyz_one_step
 
 
-def make_two_steps(hxyz: tuple):
+def make_two_steps(xyz: tuple, h: float):
     """"
     Makes two steps with the step size = h/2
     """
     # k system coeffs (roots) for step = h/2
-    k_coeffs = solve_ksystem(system_to_solve=ksystem, hxyz=(hxyz[0] / 2, hxyz[1], hxyz[2], hxyz[3]))
+    h = h / 2
+    k_coeffs = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h)
 
     # values for xyz with one step = h/2
-    xyz_one_half_step = np.array([hxyz[1] + (k_coeffs[0] + k_coeffs[2]) / 2,
-                                  hxyz[2] + (k_coeffs[2] + k_coeffs[3]) / 2,
-                                  hxyz[3] + (k_coeffs[4] + k_coeffs[5]) / 2
+    xyz_one_half_step = np.array([xyz[0] + (k_coeffs[0] + k_coeffs[2]) / 2,
+                                  xyz[1] + (k_coeffs[2] + k_coeffs[3]) / 2,
+                                  xyz[2] + (k_coeffs[4] + k_coeffs[5]) / 2
                                   ])
 
     # values for xyz with two steps of step = h/2
@@ -131,13 +134,17 @@ def make_iteration():
     pass
 
 
-def run(t_start, t_end, hxyz, epsilon = 10e-4):
-    xn = np.array([hxyz[1]])
-    yn = np.array([hxyz[2]])
-    zn = np.array([hxyz[3]])
+def run(t_start, t_end, xyz0, h0: float = 0.1, epsilon: int = 10e-4):
+
+    xyz = np.ndarray(shape=(1, 3))
+    xyz[0] = xyz0
+    xn = np.array([xyz0[0]])
+    yn = np.array([xyz0[1]])
+    zn = np.array([xyz0[2]])
     tn = np.array([t_start])
 
     # arrays for component errors
+    errors = np.array([0, 0, 0])
     err_x = np.array([0])
     err_y = np.array([0])
     err_z = np.array([0])
@@ -146,20 +153,28 @@ def run(t_start, t_end, hxyz, epsilon = 10e-4):
     error_norms = np.array([0])
 
     # array for step lengths
-    steps = np.array([hxyz[0]])
+    steps = np.array([h0])
+    h = h0
 
     curr_iter = 0
     while tn[curr_iter] <= t_end:
-        if tn[curr_iter] + hxyz[0] > t_end:
-            hxyz = (np.abs(t_end - tn[curr_iter]) + epsilon, hxyz[1], hxyz[2], hxyz[3])
+        if curr_iter > 10000:
+            break
+
+        if tn[curr_iter] + steps[curr_iter] > t_end:
+            # hxyz = (np.abs(t_end - txyz[curr_iter][0]) + epsilon, hxyz[1], hxyz[2], hxyz[3])
+            h = np.abs(t_end - tn[curr_iter]) + epsilon
+            steps = np.append(steps, h)
 
         print("CURRENT_ITER: ", curr_iter)
         print("current time point = ", tn[curr_iter])
-        print("hxyz = ", hxyz)
+        print("h = ", h)
+        print("xyz = ", xyz[curr_iter])
 
-        xyz_one_step = make_one_step(hxyz=hxyz)
+        xyz_one_step = make_one_step(xyz=xyz[curr_iter], h=h)
 
-        xyz_two_half_step = make_two_steps(hxyz=hxyz)
+        xyz_two_half_step = make_two_steps(xyz=xyz[curr_iter], h=h)
+        print("xyz_two_half_step = ", xyz_two_half_step)
 
         iter_errors = calculate_iter_errors(xyz_one_step=xyz_one_step, xyz_two_half_step=xyz_two_half_step)
 
@@ -167,44 +182,44 @@ def run(t_start, t_end, hxyz, epsilon = 10e-4):
         print(f"error norm for iter {curr_iter} = ", iter_error_norm)
         if iter_error_norm > epsilon:
 
-            hxyz = (hxyz[0] / 2, hxyz[1], hxyz[2], hxyz[3])
+            h = h / 2
+            steps[curr_iter] = h
 
         elif iter_error_norm < epsilon / 16:
 
-            tn = np.append(tn, tn[curr_iter] + hxyz[0])
+            xyz = np.append(xyz, [xyz_two_half_step], axis=0)
+            tn = np.append(tn, tn[curr_iter] + h)
             xn = np.append(xn, xyz_two_half_step[0])
             yn = np.append(yn, xyz_two_half_step[1])
             zn = np.append(zn, xyz_two_half_step[2])
-            steps = np.append(steps, hxyz[0])
+            steps = np.append(steps, h)
 
             error_norms = np.append(error_norms, iter_error_norm)
             err_x = np.append(err_x, iter_errors[0])
             err_y = np.append(err_y, iter_errors[1])
             err_z = np.append(err_z, iter_errors[2])
 
-            hxyz = (hxyz[0] * 2, xyz_two_half_step[0], xyz_two_half_step[1], xyz_two_half_step[2])
-
+            h = h * 2
             curr_iter += 1
 
         elif epsilon / 16 < iter_error_norm <= epsilon:
 
-            tn = np.append(tn, tn[curr_iter] + hxyz[0])
+            xyz = np.append(xyz, [xyz_two_half_step], axis=0)
+            tn = np.append(tn, tn[curr_iter] + h)
             xn = np.append(xn, xyz_two_half_step[0])
             yn = np.append(yn, xyz_two_half_step[1])
             zn = np.append(zn, xyz_two_half_step[2])
-            steps = np.append(steps, hxyz[0])
+            steps = np.append(steps, h)
 
             error_norms = np.append(error_norms, iter_error_norm)
             err_x = np.append(err_x, iter_errors[0])
             err_y = np.append(err_y, iter_errors[1])
             err_z = np.append(err_z, iter_errors[2])
 
-            hxyz = (hxyz[0], xyz_two_half_step[0], xyz_two_half_step[1], xyz_two_half_step[2])
-
             curr_iter += 1
 
     print(f"Current time point:\n", tn[-1])
-    print(f"Solution:\n", hxyz)
+    print(f"Solution:\n", xyz[curr_iter])
     print(f"Error norm:\n", error_norms[-1])
 
     return np.array([tn, xn, yn, zn]), error_norms
@@ -213,9 +228,10 @@ def run(t_start, t_end, hxyz, epsilon = 10e-4):
 # initial conditions
 t_start = 0
 t_end = 100
-hxyz = (0.1, 1, 1, 1)
+h0 = 0.1
+xyz0 = (1, 1, 1)
 
-txyz_arr, err_norms = run(t_start=t_start, t_end=t_end, hxyz=hxyz)
+txyz_arr, err_norms = run(t_start=t_start, t_end=t_end, xyz0=xyz0, h0=h0)
 np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', txyz_arr[0])
 np.savetxt(f'{EXPORT_DIR_PATH}xn.csv', txyz_arr[1])
 np.savetxt(f'{EXPORT_DIR_PATH}yn.csv', txyz_arr[2])
