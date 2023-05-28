@@ -9,20 +9,6 @@ if not os.path.exists(EXPORT_DIR_PATH):
     os.makedirs(EXPORT_DIR_PATH)
 
 
-def func_x(x, y, z):
-    mu = 80
-    a = 5
-    return mu * y - a * x
-
-
-def func_y(x, y, z):
-    return x * z - y
-
-
-def func_z(x, y, z):
-    return 1 - x * y - z
-
-
 def ksystem(k_coeffs: np.array, *hxyz: tuple) -> list:
     """
     Equations system for k1, k2 coefficients of the Implicit Runge-Kutta scheme of 4th order
@@ -36,36 +22,38 @@ def ksystem(k_coeffs: np.array, *hxyz: tuple) -> list:
     :param xyz:
     :return:
     """
-    h, xyz = hxyz[0], hxyz[1:]
+    system, h, xyz = hxyz[0], hxyz[1], hxyz[2:]
+    print("k_coeffs = ", k_coeffs)
     coeff_system = [  # equation for k_coeffs[0] k1x
-        k_coeffs[0] - h * func_x(xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                 xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                 xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[0] - h * system[0](xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
+                                    xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
+                                    xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
         # equation for k_coeffs[2] k1y
-        k_coeffs[2] - h * func_y(xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                 xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                 xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[2] - h * system[1](xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
+                                    xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
+                                    xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
         # equation for k_coeffs[4] k1z
-        k_coeffs[4] - h * func_z(xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                 xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                 xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[4] - h * system[2](xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
+                                    xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
+                                    xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
         # equation for k_coeffs[1] k2x
-        k_coeffs[1] - h * func_x(xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                 xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                 xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[1] - h * system[0](xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
+                                    xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
+                                    xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
         # equation for k_coeffs[3] k2y
-        k_coeffs[3] - h * func_y(xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                 xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                 xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[3] - h * system[1](xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
+                                    xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
+                                    xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
         # equation for k_coeffs[5] k2z
-        k_coeffs[5] - h * func_z(xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                 xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                 xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[5] - h * system[2](xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
+                                    xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
+                                    xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
     ]
     return coeff_system
 
 
-def solve_ksystem(system_to_solve: callable, xyz: tuple, h: float, k0: np.array = np.array((0, 0, 0, 0, 0, 0))) -> np.array:
+def solve_ksystem(system_to_solve: callable, xyz: tuple, h: float,
+                  k0: np.array = np.array((0, 0, 0, 0, 0, 0))) -> np.array:
     """
 
     :param system_to_solve: callable function that returns list of equations to solve
@@ -74,7 +62,9 @@ def solve_ksystem(system_to_solve: callable, xyz: tuple, h: float, k0: np.array 
     :return: list of roots (k_coeffs)
     """
     hxyz = (h, *xyz)
-    root = fsolve(system_to_solve, k0, args=hxyz)
+    args = (vallis_system, h, *xyz)
+    print("hxyz = ", hxyz, "k0 = ", k0)
+    root = fsolve(system_to_solve, k0, args=args)
     return root
 
 
@@ -130,12 +120,12 @@ def euclidian_norm(arr: np.array):
     eu_norm = np.sqrt(np.sum(np.power(arr, 2)))
     return eu_norm
 
+
 def make_iteration():
     pass
 
 
 def run(t_start, t_end, xyz0, h0: float = 0.1, epsilon: int = 10e-4):
-
     xyz = np.ndarray(shape=(1, 3))
     xyz[0] = xyz0
     tn = np.array([t_start])
@@ -216,13 +206,43 @@ def run(t_start, t_end, xyz0, h0: float = 0.1, epsilon: int = 10e-4):
     return (tn, xyz, errors)
 
 
-# initial conditions
-t_start = 0
-t_end = 100
-h0 = 0.1
-xyz0 = (1, 1, 1)
+if __name__ == '__main__':
+    # def func_x(x, y, z):
+    #     mu = 80
+    #     a = 5
+    #     return mu * y - a * x
+    #
+    #
+    # def func_y(x, y, z):
+    #     return x * z - y
+    #
+    #
+    # def func_z(x, y, z):
+    #     return 1 - x * y - z
 
-tn, xyz_arr, err_norms = run(t_start=t_start, t_end=t_end, xyz0=xyz0, h0=h0)
-np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', tn)
-np.savetxt(f'{EXPORT_DIR_PATH}xyzn.csv', xyz_arr, delimiter=';')
+    mu = 80
+    a = 5
+    func_x = lambda x, y, z: mu * y - a * x
+    func_y = lambda x, y, z: x * z - y
+    func_z = lambda x, y, z: 1 - x * y - z
+    vallis_system = [func_x, func_y, func_z]
 
+    h = 0.1
+    xyz = (1, 1, 1)
+    k0_coeffs = np.array((0, 0, 0, 0, 0, 0))
+    hxyz = (h, *xyz)
+    s = ksystem(k0_coeffs, vallis_system, *hxyz)
+    print(s)
+
+    ss = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h)
+    print(ss)
+
+    # initial conditions
+    t_start = 0
+    t_end = 100
+    h0 = 0.1
+    xyz0 = (1, 1, 1)
+
+    tn, xyz_arr, err_norms = run(t_start=t_start, t_end=t_end, xyz0=xyz0, h0=h0)
+    np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', tn)
+    np.savetxt(f'{EXPORT_DIR_PATH}xyzn.csv', xyz_arr, delimiter=';')
