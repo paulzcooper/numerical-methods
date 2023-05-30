@@ -117,7 +117,7 @@ def calculate_iter_errors(xyz_one_step: np.array, xyz_two_half_step: np.array) -
 def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 10e-4, max_iter: int = 10_000):
     xyz = np.ndarray(shape=(1, 3))
     xyz[0] = xyz0
-    tn = np.array([t_start])
+    times = np.array([t_start])
 
     # arrays for component errors
     errors = np.array([0, 0, 0])
@@ -130,17 +130,17 @@ def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 
     h = h0
 
     curr_iter = 0
-    while tn[curr_iter] <= t_end:
+    while times[curr_iter] <= t_end:
         if curr_iter > max_iter:
             break
 
-        if tn[curr_iter] + steps[curr_iter] > t_end:
+        if times[curr_iter] + steps[curr_iter] > t_end:
             # hxyz = (np.abs(t_end - txyz[curr_iter][0]) + epsilon, hxyz[1], hxyz[2], hxyz[3])
-            h = np.abs(t_end - tn[curr_iter]) + epsilon
+            h = np.abs(t_end - times[curr_iter]) + epsilon
             steps = np.append(steps, h)
 
         print("CURRENT_ITER: ", curr_iter)
-        print("current time point = ", tn[curr_iter])
+        print("current time point = ", times[curr_iter])
         print("h = ", h)
         print("xyz = ", xyz[curr_iter])
 
@@ -162,7 +162,7 @@ def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 
         elif iter_error_norm < epsilon / 16:
 
             xyz = np.append(xyz, [xyz_two_half_step], axis=0)
-            tn = np.append(tn, tn[curr_iter] + h)
+            times = np.append(times, times[curr_iter] + h)
             steps = np.append(steps, h)
 
             errors = np.append(errors, iter_errors)
@@ -174,7 +174,7 @@ def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 
         elif epsilon / 16 < iter_error_norm <= epsilon:
 
             xyz = np.append(xyz, [xyz_two_half_step], axis=0)
-            tn = np.append(tn, tn[curr_iter] + h)
+            times = np.append(times, times[curr_iter] + h)
             steps = np.append(steps, h)
 
             errors = np.append(errors, iter_errors)
@@ -182,11 +182,11 @@ def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 
 
             curr_iter += 1
 
-    print(f"Current time point:\n", tn[-1])
+    print(f"Current time point:\n", times[-1])
     print(f"Solution:\n", xyz[curr_iter])
     print(f"Error norm:\n", error_norms[-1])
 
-    return tn, xyz, errors
+    return times, xyz, errors
 
 
 if __name__ == '__main__':
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     func_x = lambda x, y, z: mu * y - a * x
     func_y = lambda x, y, z: x * z - y
     func_z = lambda x, y, z: 1 - x * y - z
-    vallis_system = [func_x, func_y, func_z]
+    vallis_right_parts = [func_x, func_y, func_z]
 
     # initial conditions
     t_start = 0
@@ -208,6 +208,6 @@ if __name__ == '__main__':
     h0 = 0.1
     xyz0 = (1, 1, 1)
 
-    tn, xyz_arr, err_norms = run(t_start=t_start, t_end=t_end, xyz0=xyz0, h0=h0, vector_f=vallis_system)
+    tn, xyz_arr, err_norms = run(t_start=t_start, t_end=t_end, xyz0=xyz0, h0=h0, vector_f=vallis_right_parts)
     np.savetxt(f'{EXPORT_DIR_PATH}tn.csv', tn)
     np.savetxt(f'{EXPORT_DIR_PATH}xyzn.csv', xyz_arr, delimiter=';')
