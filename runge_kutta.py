@@ -16,31 +16,33 @@ def ksystem(k_coeffs: np.array, *args: tuple) -> list:
             k_coeffs[5] k2z
     :return:
     """
+    rk_a = (1 / 4 - np.sqrt(3) / 6)
+    rk_b = (1 / 4 + np.sqrt(3) / 6)
     vector_f, h, xyz = args[0], args[1], args[2:]
     coeff_system = [  # equation for k_coeffs[0] k1x
-        k_coeffs[0] - h * vector_f[0](xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                    xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                    xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[0] - h * vector_f[0](xyz[0] + k_coeffs[0] / 4 + rk_a * k_coeffs[1],
+                                    xyz[1] + k_coeffs[2] / 4 + rk_a * k_coeffs[3],
+                                    xyz[2] + k_coeffs[4] / 4 + rk_a * k_coeffs[5]),
         # equation for k_coeffs[2] k1y
-        k_coeffs[2] - h * vector_f[1](xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                    xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                    xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[2] - h * vector_f[1](xyz[0] + k_coeffs[0] / 4 + rk_a * k_coeffs[1],
+                                    xyz[1] + k_coeffs[2] / 4 + rk_a * k_coeffs[3],
+                                    xyz[2] + k_coeffs[4] / 4 + rk_a * k_coeffs[5]),
         # equation for k_coeffs[4] k1z
-        k_coeffs[4] - h * vector_f[2](xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
-                                    xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
-                                    xyz[2] + k_coeffs[4] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[5]),
+        k_coeffs[4] - h * vector_f[2](xyz[0] + k_coeffs[0] / 4 + rk_a * k_coeffs[1],
+                                    xyz[1] + k_coeffs[2] / 4 + rk_a * k_coeffs[3],
+                                    xyz[2] + k_coeffs[4] / 4 + rk_a * k_coeffs[5]),
         # equation for k_coeffs[1] k2x
-        k_coeffs[1] - h * vector_f[0](xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                    xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                    xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[1] - h * vector_f[0](xyz[0] + rk_b * k_coeffs[0] + k_coeffs[1] / 4,
+                                    xyz[1] + rk_b * k_coeffs[2] + k_coeffs[3] / 4,
+                                    xyz[2] + rk_b * k_coeffs[4] + k_coeffs[5] / 4),
         # equation for k_coeffs[3] k2y
-        k_coeffs[3] - h * vector_f[1](xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                    xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                    xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[3] - h * vector_f[1](xyz[0] + rk_b * k_coeffs[0] + k_coeffs[1] / 4,
+                                    xyz[1] + rk_b * k_coeffs[2] + k_coeffs[3] / 4,
+                                    xyz[2] + rk_b * k_coeffs[4] + k_coeffs[5] / 4),
         # equation for k_coeffs[5] k2z
-        k_coeffs[5] - h * vector_f[2](xyz[0] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[0] + k_coeffs[1] / 4,
-                                    xyz[1] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[2] + k_coeffs[3] / 4,
-                                    xyz[2] + (1 / 4 + np.sqrt(3) / 6) * k_coeffs[4] + k_coeffs[5] / 4),
+        k_coeffs[5] - h * vector_f[2](xyz[0] + rk_b * k_coeffs[0] + k_coeffs[1] / 4,
+                                    xyz[1] + rk_b * k_coeffs[2] + k_coeffs[3] / 4,
+                                    xyz[2] + rk_b * k_coeffs[4] + k_coeffs[5] / 4),
     ]
     return coeff_system
 
