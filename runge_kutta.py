@@ -158,29 +158,20 @@ def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 
 
             h = h / 2
             steps[curr_iter] = h
+            continue
 
-        elif iter_error_norm < epsilon / 16:
+        xyz = np.append(xyz, [xyz_two_half_step], axis=0)
+        times = np.append(times, times[curr_iter] + h)
+        steps = np.append(steps, h)
 
-            xyz = np.append(xyz, [xyz_two_half_step], axis=0)
-            times = np.append(times, times[curr_iter] + h)
-            steps = np.append(steps, h)
+        errors = np.append(errors, iter_errors)
+        error_norms = np.append(error_norms, iter_error_norm)
 
-            errors = np.append(errors, iter_errors)
-            error_norms = np.append(error_norms, iter_error_norm)
+        curr_iter += 1
 
+        if iter_error_norm < epsilon / 16:
             h = h * 2
-            curr_iter += 1
 
-        elif epsilon / 16 < iter_error_norm <= epsilon:
-
-            xyz = np.append(xyz, [xyz_two_half_step], axis=0)
-            times = np.append(times, times[curr_iter] + h)
-            steps = np.append(steps, h)
-
-            errors = np.append(errors, iter_errors)
-            error_norms = np.append(error_norms, iter_error_norm)
-
-            curr_iter += 1
 
     print(f"Current time point:\n", times[-1])
     print(f"Solution:\n", xyz[curr_iter])
