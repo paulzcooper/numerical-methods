@@ -4,7 +4,7 @@ import numpy as np
 from scipy.optimize import fsolve
 
 
-def ksystem(k_coeffs: np.array, *hxyz: tuple) -> list:
+def ksystem(k_coeffs: np.array, *args: tuple) -> list:
     """
     Equations system for k1, k2 coefficients of the Implicit Runge-Kutta scheme of 4th order
     :param k_coeffs:
@@ -14,11 +14,9 @@ def ksystem(k_coeffs: np.array, *hxyz: tuple) -> list:
             k_coeffs[3] k2y
             k_coeffs[4] k1z
             k_coeffs[5] k2z
-    :param xyz:
     :return:
     """
-    vector_f, h, xyz = hxyz[0], hxyz[1], hxyz[2:]
-    print("k_coeffs = ", k_coeffs)
+    vector_f, h, xyz = args[0], args[1], args[2:]
     coeff_system = [  # equation for k_coeffs[0] k1x
         k_coeffs[0] - h * vector_f[0](xyz[0] + k_coeffs[0] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[1],
                                     xyz[1] + k_coeffs[2] / 4 + (1 / 4 - np.sqrt(3) / 6) * k_coeffs[3],
@@ -47,23 +45,29 @@ def ksystem(k_coeffs: np.array, *hxyz: tuple) -> list:
     return coeff_system
 
 
-def solve_ksystem(system_to_solve: callable, xyz: tuple, h: float, vector_f: list,
+def solve_ksystem(system_to_solve: callable, xyz: np.ndarray, h: float, vector_f: list,
                   k0: np.array = np.array((0, 0, 0, 0, 0, 0))) -> np.array:
     """
-
+    Returns coefficients of the Implicit Runge-Kutta scheme of 4th order
     :param system_to_solve: callable function that returns list of equations to solve
+    :param xyz: current dimensional point
+    :param h: step size
+    :param vector_f: vector of right parts of the ODE system
     :param k0: initial values for optimizing variables
-    :param hxyz: initial conditions for the system
-    :return: list of roots (k_coeffs)
+    :return: list of roots (k_coeffs) = [k1x, k2x, k1y, k2y, k1z, k2z]
     """
     args = (vector_f, h, *xyz)
     root = fsolve(system_to_solve, k0, args=args)
     return root
 
 
-def make_one_step(xyz, h, vector_f):
+def make_one_step(xyz: np.ndarray, h: float, vector_f: list) -> np.array:
     """"
-    Makes one step with the step size = h
+    Makes one step from the point (x, y, z) with the step size = h
+    :param xyz: current dimensional point
+    :param h: step size
+    :param vector_f: vector of right parts of the ODE system
+    :return: np.array with coordinated of next point
     """
     k_coeffs = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h, vector_f=vector_f)
     xyz_one_step = np.array([xyz[0] + (k_coeffs[0] + k_coeffs[2]) / 2,
@@ -73,9 +77,13 @@ def make_one_step(xyz, h, vector_f):
     return xyz_one_step
 
 
-def make_two_steps(xyz: tuple, h: float, vector_f):
+def make_two_steps(xyz: np.ndarray, h: float, vector_f: list) -> np.array:
     """"
-    Makes two steps with the step size = h/2
+    Makes two steps from the point (x, y, z) with the step size = h/2
+    :param xyz: current dimensional point
+    :param h: step size
+    :param vector_f: vector of right parts of the ODE system
+    :return: np.array with coordinated of next point
     """
     # k system coeffs (roots) for step = h/2
     h = h / 2
@@ -178,7 +186,7 @@ def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 
     print(f"Solution:\n", xyz[curr_iter])
     print(f"Error norm:\n", error_norms[-1])
 
-    return (tn, xyz, errors)
+    return tn, xyz, errors
 
 
 if __name__ == '__main__':
