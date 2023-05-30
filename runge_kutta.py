@@ -61,46 +61,36 @@ def solve_ksystem(system_to_solve: callable, xyz: np.ndarray, h: float, vector_f
     return root
 
 
-def make_one_step(xyz: np.ndarray, h: float, vector_f: list) -> np.array:
-    """"
-    Makes one step from the point (x, y, z) with the step size = h
-    :param xyz: current dimensional point
-    :param h: step size
-    :param vector_f: vector of right parts of the ODE system
-    :return: np.array with coordinated of next point
-    """
-    k_coeffs = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h, vector_f=vector_f)
-    xyz_one_step = np.array([xyz[0] + (k_coeffs[0] + k_coeffs[2]) / 2,
-                             xyz[1] + (k_coeffs[2] + k_coeffs[3]) / 2,
-                             xyz[2] + (k_coeffs[4] + k_coeffs[5]) / 2
-                             ])
-    return xyz_one_step
-
-
-def make_two_steps(xyz: np.ndarray, h: float, vector_f: list) -> np.array:
+def make_steps(xyz: np.ndarray, h: float, vector_f: list) -> tuple:
     """"
     Makes two steps from the point (x, y, z) with the step size = h/2
     :param xyz: current dimensional point
     :param h: step size
     :param vector_f: vector of right parts of the ODE system
-    :return: np.array with coordinated of next point
+    :return: tuple with steps (one_step, two_half_steps)
     """
+    # k system coeffs (roots) for step = h
+    k_coeffs_h = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h, vector_f=vector_f)
+    xyz_one_step = np.array([xyz[0] + (k_coeffs_h[0] + k_coeffs_h[2]) / 2,
+                             xyz[1] + (k_coeffs_h[2] + k_coeffs_h[3]) / 2,
+                             xyz[2] + (k_coeffs_h[4] + k_coeffs_h[5]) / 2
+                             ])
+
     # k system coeffs (roots) for step = h/2
-    h = h / 2
-    k_coeffs = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h, vector_f=vector_f)
+    k_coeffs_h2 = solve_ksystem(system_to_solve=ksystem, xyz=xyz, h=h / 2, vector_f=vector_f)
 
     # values for xyz with one step = h/2
-    xyz_one_half_step = np.array([xyz[0] + (k_coeffs[0] + k_coeffs[2]) / 2,
-                                  xyz[1] + (k_coeffs[2] + k_coeffs[3]) / 2,
-                                  xyz[2] + (k_coeffs[4] + k_coeffs[5]) / 2
+    xyz_one_half_step = np.array([xyz[0] + (k_coeffs_h2[0] + k_coeffs_h2[2]) / 2,
+                                  xyz[1] + (k_coeffs_h2[2] + k_coeffs_h2[3]) / 2,
+                                  xyz[2] + (k_coeffs_h2[4] + k_coeffs_h2[5]) / 2
                                   ])
 
     # values for xyz with two steps of step = h/2
-    xyz_two_half_step = np.array([xyz_one_half_step[0] + (k_coeffs[0] + k_coeffs[2]) / 2,
-                                  xyz_one_half_step[1] + (k_coeffs[2] + k_coeffs[3]) / 2,
-                                  xyz_one_half_step[2] + (k_coeffs[4] + k_coeffs[5]) / 2
+    xyz_two_half_step = np.array([xyz_one_half_step[0] + (k_coeffs_h2[0] + k_coeffs_h2[2]) / 2,
+                                  xyz_one_half_step[1] + (k_coeffs_h2[2] + k_coeffs_h2[3]) / 2,
+                                  xyz_one_half_step[2] + (k_coeffs_h2[4] + k_coeffs_h2[5]) / 2
                                   ])
-    return xyz_two_half_step
+    return xyz_one_step, xyz_two_half_step
 
 
 def calculate_iter_errors(xyz_one_step: np.array, xyz_two_half_step: np.array) -> np.array:
@@ -144,9 +134,8 @@ def run(t_start, t_end, xyz0, vector_f: list, h0: float = 0.1, epsilon: float = 
         print("h = ", h)
         print("xyz = ", xyz[curr_iter])
 
-        xyz_one_step = make_one_step(xyz=xyz[curr_iter], h=h, vector_f=vector_f)
+        xyz_one_step, xyz_two_half_step = make_steps(xyz=xyz[curr_iter], h=h, vector_f=vector_f)
 
-        xyz_two_half_step = make_two_steps(xyz=xyz[curr_iter], h=h, vector_f=vector_f)
         print("xyz_two_half_step = ", xyz_two_half_step)
 
         # Calculates Euclidian norm of errors vector: √(err_x^2 + err_y^2 + err_z^2)
